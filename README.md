@@ -11,8 +11,8 @@ npm install Power-Bots/PowerBotLibrary
 
 ## Usage
 ```typescript
-import { Bot } from "powerbotlibrary"
-import { db } from "powerbotlibrary" // If you want to use database
+import { Bot } from "@power-bots/powerbotlibrary"
+import { db } from "@power-bots/powerbotlibrary" // If you want to use database
 
 const bot = new Bot(__dirname)
 ```
