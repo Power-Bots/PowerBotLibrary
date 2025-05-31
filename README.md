@@ -6,7 +6,7 @@ PowerBotsLibrary is the core of all Power Bots and makes up the foundation to sh
 
 ## Install
 ```
-npm install Power-Bots/PowerBotLibrary
+npm install @power-bots/powerbotlibrary
 ```
 
 ## Usage
