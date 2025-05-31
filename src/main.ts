@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import fs from 'node:fs';
 import path from 'node:path';
-import { Client, Collection, Events, GatewayIntentBits, Routes, REST } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFlags } from 'discord.js';
 import { Log } from "./log"
 
 export { db } from "./db";
@@ -102,7 +102,7 @@ export class Bot {
                 };
             } catch (error) {
                 this.log.error(`${error}`);
-                const errorMessage = { content: 'There was an error while executing this command!', ephemeral: true }
+                const errorMessage = { content: 'There was an error while executing this command!', flags: [MessageFlags.Ephemeral]}
                 if (interaction.replied || interaction.deferred) {
                     await interaction.followUp(errorMessage);
                 } else {
