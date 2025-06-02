@@ -5,14 +5,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFlags } from 'discord.js';
 import { Log } from "./log"
+import { updateDatabase } from './db';
 
 export { db } from "./db";
 
 export class Bot {
     log: any;
     client: any;
-    constructor(__dirname: any){
+    constructor(dirname: any){
         this.log = new Log()
+
+        updateDatabase(dirname)
 
         this.log.info("Press Control+C to stop the bot");
 
@@ -38,7 +41,7 @@ export class Bot {
         let commands: Collection<String, any> = new Collection();
         let commandsArray : string[] = [];
 
-        const foldersPath = path.join(__dirname, 'commands');
+        const foldersPath = path.join(dirname, 'commands');
         const commandFolders = fs.readdirSync(foldersPath);
 
         for (const folder of commandFolders) {
