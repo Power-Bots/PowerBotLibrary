@@ -12,6 +12,8 @@ export { db } from "./db";
 export class Bot {
     log: any;
     client: any;
+    commands: Collection<String, any>
+    commandsArray: string[]
     constructor(dirname: any){
         this.log = new Log()
 
@@ -38,8 +40,8 @@ export class Bot {
         ]});
 
         // IMPORT COMMANDS
-        let commands: Collection<String, any> = new Collection();
-        let commandsArray : string[] = [];
+        this.commands = new Collection();
+        this.commandsArray = [];
 
         const foldersPath = path.join(dirname, 'commands');
         const commandFolders = fs.readdirSync(foldersPath);
@@ -57,8 +59,8 @@ export class Bot {
                 const command = require(filePath);
                 if ('data' in command && 'execute' in command) {
                     this.log.info(`"${command.data.name}" command was imported from ${filePath}`);
-                    commands.set(command.data.name, command);
-                    commandsArray.push(command.data.toJSON());
+                    this.commands.set(command.data.name, command);
+                    this.commandsArray.push(command.data.toJSON());
                 } else {
                     this.log.warn(`The command at ${filePath} is missing a required "data" or "execute" property.`);
                 };
@@ -74,10 +76,10 @@ export class Bot {
             
             (async () => {
                 try {
-                    this.log.info(`Started refreshing ${commandsArray.length} application (/) commands.`);
+                    this.log.info(`Started refreshing ${this.commandsArray.length} application (/) commands.`);
                     const data: any = await rest.put(
                         Routes.applicationCommands(readyClient.user.id),
-                        { body: commandsArray },
+                        { body: this.commandsArray },
                     );
             
                     this.log.info(`Successfully reloaded ${data.length} application (/) commands.`);
@@ -94,7 +96,7 @@ export class Bot {
         this.client.on(Events.InteractionCreate, async (interaction: any) => {
             try {
                 if (interaction.isChatInputCommand()){
-                    const command: any = commands.get(interaction.commandName);
+                    const command: any = this.commands.get(interaction.commandName);
 
                     if (!command) {
                         this.log.error(`No command matching ${interaction.commandName} was found.`);
