@@ -5,9 +5,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFlags } from 'discord.js';
 import { Log } from "./log"
-import { updateDatabase } from './db';
-
-export { db } from "./db";
+import { setupDatabase, updateDatabase } from './db';
+export { knex } from "./db"
 
 export class Bot {
     log: any;
@@ -15,18 +14,18 @@ export class Bot {
     commands: any
     commandsArray: any
     dirname: any
-    setup(dirname: any){
+    async setup(dirname: any){
         this.dirname = dirname
+        await setupDatabase()
+        await updateDatabase()
     }
-    run(){
+    async run(){
         this.log = new Log()
-        
+
         if (!this.dirname){
             this.log.error(`Bot was not setup.`);
             process.exit();
         }
-
-        updateDatabase(this.dirname)
 
         this.log.info("Press Control+C to stop the bot");
 

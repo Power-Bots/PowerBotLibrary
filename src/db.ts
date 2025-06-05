@@ -1,17 +1,32 @@
-import Database from "better-sqlite3"
 import path from "node:path"
 import fs from "node:fs"
+import { bot } from "./main"
+import { Knex } from "knex"
 
-export const db: any = new Database('bot.db')
-db.pragma('journal_mode = WAL')
-db.defaultSafeIntegers()
+export let knex: Knex
+export async function setupDatabase(){
+    knex = require("knex")({
+        client: 'better-sqlite3',
+        connection: {
+            filename: path.join(bot.dirname, '../bot.db')
+        },
+        useNullAsDefault: true,
+        pool: {
+            afterCreate: (conn: any, done: any) => {
+                conn.pragma('journal_mode = WAL');
+                done(null, conn);
+            }
+        }
+    })
+}
 
-export function updateDatabase(dirname: any) {
-    const userVersion = parseInt(db.pragma('user_version', { simple: true }))
-    const migrateFolder = path.join(dirname, "migrate")
+export async function updateDatabase() {
+    const userVersion = (await knex.raw("PRAGMA user_version;"))[0].user_version
+    const migrateFolder = path.join(bot.dirname, "migrate")
     if (!fs.existsSync(migrateFolder)) return
     let updating = true
     let nextVersion = userVersion
+    const rawDb = await knex.client.acquireConnection()
     while (updating) {
         nextVersion = nextVersion + 1
         const nextVersionFile = path.join(migrateFolder, `${nextVersion}.sql`)
@@ -19,7 +34,7 @@ export function updateDatabase(dirname: any) {
             updating = false
             break
         }
-        db.exec(fs.readFileSync(nextVersionFile, {encoding: "utf-8"}))
-        db.pragma(`user_version = ${nextVersion}`)
+        await rawDb.exec(fs.readFileSync(nextVersionFile, {encoding: "utf-8"}))
+        rawDb.pragma(`user_version = ${nextVersion}`)
     }
 }
