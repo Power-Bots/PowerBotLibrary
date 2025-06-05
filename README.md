@@ -12,7 +12,7 @@ npm install @power-bots/powerbotlibrary
 ## Usage
 ```typescript
 import { bot } from "@power-bots/powerbotlibrary"
-import { db } from "@power-bots/powerbotlibrary" // If you want to use database
+import { knex } from "@power-bots/powerbotlibrary" // If you want to use database
 
 bot.setup(__dirname)
 bot.run()
