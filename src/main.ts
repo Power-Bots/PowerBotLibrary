@@ -19,11 +19,12 @@ export class Bot {
         this.dirname = dirname
     }
     run(){
+        this.log = new Log()
+        
         if (!this.dirname){
             this.log.error(`Bot was not setup.`);
             process.exit();
         }
-        this.log = new Log()
 
         updateDatabase(this.dirname)
 
