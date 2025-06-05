@@ -12,12 +12,20 @@ export { db } from "./db";
 export class Bot {
     log: any;
     client: any;
-    commands: Collection<String, any>
-    commandsArray: string[]
-    constructor(dirname: any){
+    commands: any
+    commandsArray: any
+    dirname: any
+    setup(dirname: any){
+        this.dirname = dirname
+    }
+    run(){
+        if (!this.dirname){
+            this.log.error(`Bot was not setup.`);
+            process.exit();
+        }
         this.log = new Log()
 
-        updateDatabase(dirname)
+        updateDatabase(this.dirname)
 
         this.log.info("Press Control+C to stop the bot");
 
@@ -43,7 +51,7 @@ export class Bot {
         this.commands = new Collection();
         this.commandsArray = [];
 
-        const foldersPath = path.join(dirname, 'commands');
+        const foldersPath = path.join(this.dirname, 'commands');
         if (fs.existsSync(foldersPath)){
             const commandFolders = fs.readdirSync(foldersPath);
 
@@ -120,3 +128,5 @@ export class Bot {
         });
     }
 }
+
+export const bot = new Bot()
