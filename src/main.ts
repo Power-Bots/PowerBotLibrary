@@ -59,7 +59,6 @@ export class Bot {
                     const filePath = path.join(commandsPath, file);
                     const command = require(filePath);
                     if ('data' in command && 'execute' in command) {
-                        this.log.info(`"${command.data.name}" command was imported from ${filePath}`);
                         this.commands.set(command.data.name, command);
                         this.commandsArray.push(command.data.toJSON());
                     } else {
