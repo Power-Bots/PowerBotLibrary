@@ -44,34 +44,37 @@ export class Bot {
         this.commandsArray = [];
 
         const foldersPath = path.join(dirname, 'commands');
-        const commandFolders = fs.readdirSync(foldersPath);
+        if (fs.existsSync(foldersPath)){
+            const commandFolders = fs.readdirSync(foldersPath);
 
-        for (const folder of commandFolders) {
-            const commandsPath = path.join(foldersPath, folder);
-            let commandFiles;
-            if (fs.statSync(commandsPath).isDirectory()){
-                commandFiles = fs.readdirSync(commandsPath).filter((file: string) => file.endsWith('.js'));
-            } else {
-                commandFiles = [""]
-            }
-            for (const file of commandFiles) {
-                const filePath = path.join(commandsPath, file);
-                const command = require(filePath);
-                if ('data' in command && 'execute' in command) {
-                    this.log.info(`"${command.data.name}" command was imported from ${filePath}`);
-                    this.commands.set(command.data.name, command);
-                    this.commandsArray.push(command.data.toJSON());
+            for (const folder of commandFolders) {
+                const commandsPath = path.join(foldersPath, folder);
+                let commandFiles;
+                if (fs.statSync(commandsPath).isDirectory()){
+                    commandFiles = fs.readdirSync(commandsPath).filter((file: string) => file.endsWith('.js'));
                 } else {
-                    this.log.warn(`The command at ${filePath} is missing a required "data" or "execute" property.`);
+                    commandFiles = [""]
+                }
+                for (const file of commandFiles) {
+                    const filePath = path.join(commandsPath, file);
+                    const command = require(filePath);
+                    if ('data' in command && 'execute' in command) {
+                        this.log.info(`"${command.data.name}" command was imported from ${filePath}`);
+                        this.commands.set(command.data.name, command);
+                        this.commandsArray.push(command.data.toJSON());
+                    } else {
+                        this.log.warn(`The command at ${filePath} is missing a required "data" or "execute" property.`);
+                    };
                 };
             };
-        };
+        }
 
         // LOGIN CLIENT
         this.client.once(Events.ClientReady, (readyClient: any) => {
             this.log.info(`Logged in as ${readyClient.user.tag}`);
             
             // REGISTER COMMANDS
+            if (this.commandsArray.length === 0) return
             const rest = new REST().setToken(botToken);
             
             (async () => {
