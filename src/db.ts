@@ -4,6 +4,7 @@ import { bot } from "./main"
 import { Knex } from "knex"
 
 export let knex: Knex
+let rawDb: any
 export async function setupDatabase(){
     knex = require("knex")({
         client: 'better-sqlite3',
@@ -13,6 +14,7 @@ export async function setupDatabase(){
         useNullAsDefault: true,
         pool: {
             afterCreate: (conn: any, done: any) => {
+                rawDb = conn
                 conn.pragma('journal_mode = WAL');
                 done(null, conn);
             }
@@ -26,7 +28,6 @@ export async function updateDatabase() {
     if (!fs.existsSync(migrateFolder)) return
     let updating = true
     let nextVersion = userVersion
-    const rawDb = await knex.client.acquireConnection()
     while (updating) {
         nextVersion = nextVersion + 1
         const nextVersionFile = path.join(migrateFolder, `${nextVersion}.sql`)
