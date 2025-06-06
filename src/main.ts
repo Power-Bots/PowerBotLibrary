@@ -7,6 +7,7 @@ import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFla
 import { Log } from "./log"
 import { setupDatabase, updateDatabase } from './db';
 export { knex } from "./db"
+export { Config, ConfigTypes } from "./config"
 
 export class Bot {
     log: any;
