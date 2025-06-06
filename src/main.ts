@@ -9,7 +9,7 @@ import { setupDatabase, updateDatabase } from './db';
 export { knex } from "./db"
 export { Config, ConfigTypes } from "./config"
 
-export class Bot {
+class Bot {
     log: any;
     client: any;
     commands: any
