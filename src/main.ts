@@ -41,6 +41,7 @@ class Bot {
     commands: any
     commandsArray: any
     dirname: any
+    info: any = {}
     async setup(dirname: any){
         this.dirname = dirname
         await setupDatabase()
@@ -66,6 +67,14 @@ class Bot {
             this.log.error(`The \"DISCORD_TOKEN\" wasn't found in the .env file.\nIt can be added with: \"DISCORD_TOKEN=mytokenhere\"`);
             process.exit();
         };
+
+        // READ BOT.JSON
+        const botJsonLocation = path.join(this.dirname, "bot.json")
+        if (fs.existsSync(botJsonLocation)){
+            fs.readFile(botJsonLocation, {encoding: "utf-8"}, (err: any, data: any) => {
+                this.info = JSON.parse(data)
+            })
+        }
 
         // CREATE CLIENT
         this.client = new Client({intents: [
