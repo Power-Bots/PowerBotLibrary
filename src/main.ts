@@ -9,6 +9,32 @@ import { setupDatabase, updateDatabase } from './db';
 export { knex } from "./db"
 export { Config, ConfigTypes } from "./config"
 
+function addCommandsFromPath(bot: Bot, foldersPath: string){
+    if (fs.existsSync(foldersPath)){
+        const commandFolders = fs.readdirSync(foldersPath);
+
+        for (const folder of commandFolders) {
+            const commandsPath = path.join(foldersPath, folder);
+            let commandFiles;
+            if (fs.statSync(commandsPath).isDirectory()){
+                commandFiles = fs.readdirSync(commandsPath).filter((file: string) => file.endsWith('.js'));
+            } else {
+                commandFiles = [""]
+            }
+            for (const file of commandFiles) {
+                const filePath = path.join(commandsPath, file);
+                const command = require(filePath);
+                if ('data' in command && 'execute' in command) {
+                    bot.commands.set(command.data.name, command);
+                    bot.commandsArray.push(command.data.toJSON());
+                } else {
+                    bot.log.warn(`The command at ${filePath} is missing a required "data" or "execute" property.`);
+                };
+            };
+        };
+    }
+}
+
 class Bot {
     log: any;
     client: any;
@@ -52,30 +78,8 @@ class Bot {
         this.commands = new Collection();
         this.commandsArray = [];
 
-        const foldersPath = path.join(this.dirname, 'commands');
-        if (fs.existsSync(foldersPath)){
-            const commandFolders = fs.readdirSync(foldersPath);
-
-            for (const folder of commandFolders) {
-                const commandsPath = path.join(foldersPath, folder);
-                let commandFiles;
-                if (fs.statSync(commandsPath).isDirectory()){
-                    commandFiles = fs.readdirSync(commandsPath).filter((file: string) => file.endsWith('.js'));
-                } else {
-                    commandFiles = [""]
-                }
-                for (const file of commandFiles) {
-                    const filePath = path.join(commandsPath, file);
-                    const command = require(filePath);
-                    if ('data' in command && 'execute' in command) {
-                        this.commands.set(command.data.name, command);
-                        this.commandsArray.push(command.data.toJSON());
-                    } else {
-                        this.log.warn(`The command at ${filePath} is missing a required "data" or "execute" property.`);
-                    };
-                };
-            };
-        }
+        addCommandsFromPath(this, path.join(this.dirname, 'commands'))
+        addCommandsFromPath(this, path.join(__dirname, 'commands'))
 
         // LOGIN CLIENT
         this.client.once(Events.ClientReady, (readyClient: any) => {
