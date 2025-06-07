@@ -44,6 +44,7 @@ module.exports = {
                         break
                 }
                 Config.set(scope, id, key, value)
+                await interaction.reply({content: `✅ Set \`${key}\` to \`${value}\``});
                 break;
             default:
                 break;
