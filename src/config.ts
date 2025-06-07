@@ -7,6 +7,7 @@ export enum ConfigTypes {
 }
 
 export class Config {
+    static setEvents: Map<string, Function> = new Map<string, Function>();
     static async getRaw(scope: ConfigTypes, id: Snowflake | string | number, key: string): Promise<any> {
         const valueRaw = await knex("config").where({
             scope: scope,
@@ -39,5 +40,15 @@ export class Config {
             key: key,
             value: value
         })
+        const event = this.setEvents.get(key)
+        if (event) await event({
+            scope: scope,
+            id: id,
+            key: key,
+            value: value
+        })
+    }
+    static async onSet(key: string, func: Function){
+        this.setEvents.set(key, func)
     }
 }
