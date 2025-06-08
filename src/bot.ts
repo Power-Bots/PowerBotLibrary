@@ -5,6 +5,7 @@ import path from 'node:path';
 import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFlags, Snowflake, Guild, Role, GuildBasedChannel } from 'discord.js';
 import { Log } from "./log"
 import { setupDatabase, updateDatabase } from './db';
+import { Lang } from './lang';
 export { knex } from "./db"
 export { Config, ConfigTypes } from "./config"
 
@@ -45,6 +46,7 @@ export class Bot {
         this.dirname = dirname
         await setupDatabase()
         await updateDatabase()
+        await Lang.setup()
     }
     async run(){
         this.log = new Log()
