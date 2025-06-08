@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import fs from 'node:fs';
 import path from 'node:path';
-import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFlags } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFlags, Snowflake, Guild, Role, GuildBasedChannel } from 'discord.js';
 import { Log } from "./log"
 import { setupDatabase, updateDatabase } from './db';
 export { knex } from "./db"
@@ -139,5 +139,44 @@ export class Bot {
             };
             return;
         });
+    }
+
+    async resolveGuild(guild: Guild | Snowflake): Promise<Guild | null> {
+        let _guild: Guild | null
+        if (typeof guild === "string") {
+            _guild = await this.getGuild(guild)
+        } else {
+            _guild = guild
+        }
+        if (!_guild) return null
+        return _guild
+    }
+
+    async getGuild(id: Snowflake): Promise<Guild | null> {
+        try {
+            return await this.client.guilds.fetch(id)
+        } catch {
+            return null
+        }
+    }
+    
+    async getRole(id: Snowflake, guild: Guild | Snowflake): Promise<Role | null> {
+        let _guild = await this.resolveGuild(guild)
+        if (!_guild) return null
+        try {
+            return await _guild.roles.fetch(id)
+        } catch {
+            return null
+        }
+    }
+    
+    async getGuildChannel(id: Snowflake, guild: Guild | Snowflake): Promise<GuildBasedChannel | null> {
+        let _guild = await this.resolveGuild(guild)
+        if (!_guild) return null
+        try {
+            return await _guild.channels.fetch(id)
+        } catch {
+            return null
+        }
     }
 }
