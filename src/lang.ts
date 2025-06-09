@@ -56,11 +56,12 @@ export class Lang {
         Lang.en = new Lang("en")
     }
     async get(text: string, args?: Record<string, any>): Promise<any> {
-        const rawText = this.texts[text]
-        let newText = rawText
-        if (args){
-            for (const [name, value] of Object.entries(args)){
-                newText = newText.replace(`{{${name}}}`, value)
+        let newText = this.texts[text]
+        if (typeof newText === "string"){
+            if (args){
+                for (const [name, value] of Object.entries(args)){
+                    newText = newText.replace(`{{${name}}}`, value)
+                }
             }
         }
         return newText
