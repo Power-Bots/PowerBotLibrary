@@ -1,7 +1,7 @@
 import path from "path"
 import fs from "fs"
 import { bot } from "./main"
-import { CommandInteraction } from "discord.js"
+import { CommandInteraction, MessageFlags } from "discord.js"
 
 async function localize(obj: any, lang: Lang, args?: Record<string, any>): Promise<any>{
     if (typeof obj === "string") {
@@ -16,6 +16,7 @@ async function localize(obj: any, lang: Lang, args?: Record<string, any>): Promi
     if (typeof obj === "object" && obj !== null) {
         const result: Record<string, any> = {};
         for (const [key, value] of Object.entries(obj)) {
+            if (key === "options") break
             result[key] = await localize(value, lang, args);
         }
         return result;
@@ -26,8 +27,10 @@ async function localize(obj: any, lang: Lang, args?: Record<string, any>): Promi
 
 export async function reply(interaction: CommandInteraction, text: string, args?: Record<string, any>){
     const embed = await Lang.embed.get(text)
+    let flags: any[] = []
+    if (embed?.options?.ephemeral) flags.push(MessageFlags.Ephemeral)
     const newEmbed = await localize(embed, Lang.en, args)
-    await interaction.reply({ embeds: [newEmbed]})
+    await interaction.reply({ embeds: [newEmbed], flags: flags })
 }
 
 export class Lang {
