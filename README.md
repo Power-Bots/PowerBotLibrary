@@ -18,5 +18,4 @@ bot.setup(__dirname)
 bot.run()
 ```
 
-
-More documentation will be available soon.
+There is ***some*** documnetation [here](https://github.com/Power-Bots/PowerBotLibrary/wiki)
