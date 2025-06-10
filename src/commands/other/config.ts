@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { bot } from '../../main';
 import { Config, ConfigTypes } from '../../config';
 
@@ -37,6 +37,9 @@ module.exports = {
                 let id
                 switch (scope){
                     case ConfigTypes.Guild:
+                        if (
+                            !interaction.memberPermissions.has(PermissionFlagsBits.ManageGuild)
+                        ) return await interaction.reply({ content: "❌ `Manage Server` permission required" })
                         id = interaction.guildId
                         break
                     case ConfigTypes.User:
