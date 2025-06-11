@@ -10,7 +10,11 @@ async function localize(obj: any, lang: Lang, args?: Record<string, any>): Promi
     }
 
     if (Array.isArray(obj)) {
-        return obj.map(async item => await localize(item, lang, args));
+        let results = []
+        for (const item of obj){
+            results.push(await localize(item, lang, args))
+        }
+        return results
     }
 
     if (typeof obj === "object" && obj !== null) {
