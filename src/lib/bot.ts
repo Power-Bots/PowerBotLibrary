@@ -62,12 +62,7 @@ export class Bot {
         this.commands = new Collection();
         this.commandsArray = [];
         
-        await this.importFolder(
-            path.join(this.dirname, 'commands'),
-            (data: any) => this.commandImporter(data)
-        )
-        await this.importFolder(
-            path.join(__dirname, 'commands'),
+        await this.importFolder('commands',
             (data: any) => this.commandImporter(data)
         )
 
@@ -138,6 +133,11 @@ export class Bot {
     }
 
     async importFolder(folder: string, func: Function, requiredData: string[] = []) {
+        await this._importFolder(path.join(this.dirname, folder), func, requiredData)
+        await this._importFolder(path.join(__dirname, "..", folder), func, requiredData)
+    }
+
+    async _importFolder(folder: string, func: Function, requiredData: string[] = []) {
         for (const file of await this.scanFolder(folder)) {
             const data = require(file)
             for (const required of requiredData) if (!data[required]) continue
