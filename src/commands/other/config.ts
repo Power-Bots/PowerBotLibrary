@@ -1,6 +1,6 @@
 import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { bot } from '../../main';
-import { Config, ConfigTypes } from '../../config';
+import { Config, ConfigTypes } from '../../lib/config';
 
 module.exports = {
 	data: new SlashCommandBuilder()

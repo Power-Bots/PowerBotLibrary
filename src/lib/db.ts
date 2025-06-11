@@ -1,6 +1,6 @@
 import path from "node:path"
 import fs from "node:fs"
-import { bot } from "./main"
+import { bot } from "../main"
 import { Knex } from "knex"
 
 export let knex: Knex

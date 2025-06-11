@@ -1,6 +1,6 @@
 import path from "path"
 import fs from "fs"
-import { bot } from "./main"
+import { bot } from "../main"
 import { CommandInteraction, MessageFlags } from "discord.js"
 
 async function localize(obj: any, lang: Lang, args?: Record<string, any>): Promise<any>{

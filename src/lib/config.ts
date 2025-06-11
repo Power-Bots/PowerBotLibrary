@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { knex } from "./main";
+import { knex } from "../main";
 
 export enum ConfigTypes {
     Guild = "guild",

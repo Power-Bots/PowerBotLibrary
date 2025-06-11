@@ -1,7 +1,7 @@
-import { Bot } from "./bot"
+import { Bot } from "./lib/bot"
 
-export { knex } from "./db"
-export { Config, ConfigTypes } from "./config"
-export { Lang, reply } from "./lang"
+export { knex } from "./lib/db"
+export { Config, ConfigTypes } from "./lib/config"
+export { Lang, reply } from "./lib/lang"
 
 export const bot = new Bot()
