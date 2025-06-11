@@ -9,32 +9,6 @@ import { Lang } from './lang';
 export { knex } from "./db"
 export { Config, ConfigTypes } from "./config"
 
-function addCommandsFromPath(bot: Bot, foldersPath: string){
-    if (fs.existsSync(foldersPath)){
-        const commandFolders = fs.readdirSync(foldersPath);
-
-        for (const folder of commandFolders) {
-            const commandsPath = path.join(foldersPath, folder);
-            let commandFiles;
-            if (fs.statSync(commandsPath).isDirectory()){
-                commandFiles = fs.readdirSync(commandsPath).filter((file: string) => file.endsWith('.js'));
-            } else {
-                commandFiles = [""]
-            }
-            for (const file of commandFiles) {
-                const filePath = path.join(commandsPath, file);
-                const command = require(filePath);
-                if ('data' in command && 'execute' in command) {
-                    bot.commands.set(command.data.name, command);
-                    bot.commandsArray.push(command.data.toJSON());
-                } else {
-                    bot.log.warn(`The command at ${filePath} is missing a required "data" or "execute" property.`);
-                };
-            };
-        };
-    }
-}
-
 export class Bot {
     log: any;
     client: any;
@@ -87,9 +61,15 @@ export class Bot {
         // IMPORT COMMANDS
         this.commands = new Collection();
         this.commandsArray = [];
-
-        addCommandsFromPath(this, path.join(this.dirname, 'commands'))
-        addCommandsFromPath(this, path.join(__dirname, 'commands'))
+        
+        await this.importFolder(
+            path.join(this.dirname, 'commands'),
+            (data: any) => this.commandImporter(data)
+        )
+        await this.importFolder(
+            path.join(__dirname, 'commands'),
+            (data: any) => this.commandImporter(data)
+        )
 
         // LOGIN CLIENT
         this.client.once(Events.ClientReady, (readyClient: any) => {
@@ -141,6 +121,33 @@ export class Bot {
             };
             return;
         });
+    }
+
+    async scanFolder(folder: string): Promise<string[]> {
+        let results = []
+        if (fs.existsSync(folder)){
+            const folderContents = fs.readdirSync(folder)
+            for (const file of folderContents){
+                const fullPath = path.join(folder, file)
+                const stats = fs.lstatSync(fullPath)
+                if (stats.isDirectory()) results.push(...await this.scanFolder(fullPath))
+                if (stats.isFile()) results.push(fullPath)
+            }
+        } 
+        return results
+    }
+
+    async importFolder(folder: string, func: Function, requiredData: string[] = []) {
+        for (const file of await this.scanFolder(folder)) {
+            const data = require(file)
+            for (const required of requiredData) if (!data[required]) continue
+            if (file.endsWith(".js")) await func(data)
+        }
+    }
+
+    async commandImporter(command: any){
+        this.commands.set(command.data.name, command);
+        this.commandsArray.push(command.data.toJSON());
     }
 
     async resolveGuild(guild: Guild | Snowflake): Promise<Guild | null> {
