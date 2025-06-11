@@ -65,6 +65,9 @@ export class Bot {
         await this.importFolder('commands',
             (data: any) => this.commandImporter(data)
         )
+        await this.importFolder('events',
+            (data: any) => this.eventImporter(data)
+        )
 
         // LOGIN CLIENT
         this.client.once(Events.ClientReady, (readyClient: any) => {
@@ -148,6 +151,10 @@ export class Bot {
     async commandImporter(command: any){
         this.commands.set(command.data.name, command);
         this.commandsArray.push(command.data.toJSON());
+    }
+    
+    async eventImporter(data: any){
+        this.client.on(data.event, data.execute)
     }
 
     async resolveGuild(guild: Guild | Snowflake): Promise<Guild | null> {
