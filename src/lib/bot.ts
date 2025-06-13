@@ -6,6 +6,7 @@ import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFla
 import { Log } from "./log"
 import { setupDatabase, updateDatabase } from './db';
 import { Lang } from './lang';
+import { knex } from "./db"
 export { knex } from "./db"
 export { Config, ConfigTypes } from "./config"
 
@@ -23,6 +24,14 @@ export class Bot {
         await Lang.setup()
     }
     async run(){
+        process.stdin.on('data', async (dataRaw) => {
+            if (dataRaw.toString().trim() === "q") {
+                await knex.destroy()
+                await this.client.destroy()
+                process.exit()
+            }
+        });
+
         this.log = new Log()
 
         if (!this.dirname){
@@ -30,7 +39,7 @@ export class Bot {
             process.exit();
         }
 
-        this.log.info("Press Control+C to stop the bot");
+        this.log.info("Press Q+Return to stop the bot");
 
         // ENVIROMENT VARS
         if (!fs.existsSync(".env")){
