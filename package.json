@@ -5,12 +5,12 @@
   "types": "dist/main.d.ts",
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^22.15.26",
+    "@types/node": "^22.19.21",
     "better-sqlite3": "^11.10.0",
-    "discord.js": "^14.19.3",
-    "dotenv": "^16.5.0",
-    "knex": "^3.1.0",
-    "typescript": "^5.8.3"
+    "discord.js": "^14.26.4",
+    "dotenv": "^16.6.1",
+    "knex": "^3.2.10",
+    "typescript": "^5.9.3"
   },
   "files": [
     "/dist"
