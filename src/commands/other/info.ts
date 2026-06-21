@@ -6,8 +6,6 @@ module.exports = {
 		.setName('info')
 		.setDescription('Quick info about this bot'),
 	async execute(interaction: any) {
-		bot.log.info("hello")
-		bot.log.info(bot.info)
 		let embed = new EmbedBuilder()
 			.setTitle(bot.info?.name ?? null)
 			.setThumbnail(bot.info?.icon ?? "")
@@ -17,7 +15,6 @@ module.exports = {
 					name: "Repository", value: bot.info?.repo ?? "undefined"
 				}
 			)
-		bot.log.info(embed.toJSON())
 		await interaction.reply({embeds: [embed]})
 	},
 };
