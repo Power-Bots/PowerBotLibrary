@@ -39,28 +39,31 @@ export async function reply(interaction: CommandInteraction, text: string, args?
 
 export class Lang {
     texts: any
+    static global: Lang
     static en: Lang
     static embed: Lang
     constructor(lang: string){
+        this.texts = {}
         const langFileLocation = path.join(Lang.folder, `${lang}.json`)
 
         if (fs.existsSync(langFileLocation)){
-            fs.readFile(langFileLocation, {encoding: "utf-8"}, (err: any, data: any) => {
-                this.texts = JSON.parse(data)
-                return
-            })
+            const data = fs.readFileSync(langFileLocation, {encoding: "utf-8"})
+            this.texts = JSON.parse(data)
         }
-        this.texts = null
     }
     static get folder(){
         return path.join(bot.dirname, "lang")
     }
     static async setup(){
+        Lang.global = new Lang("global")
         Lang.embed = new Lang("embed")
         Lang.en = new Lang("en")
     }
     async get(text: string, args?: Record<string, any>): Promise<any> {
         let newText = this.texts[text]
+        if (newText === undefined && Lang.global){
+            newText = Lang.global.texts[text]
+        }
         if (typeof newText === "string"){
             if (args){
                 for (const [name, value] of Object.entries(args)){
