@@ -5,7 +5,16 @@ import { CommandInteraction, MessageFlags } from "discord.js"
 
 async function localize(obj: any, lang: Lang, args?: Record<string, any>): Promise<any>{
     if (typeof obj === "string") {
-        if (obj.startsWith("$")) return lang.get(obj.replace("$",""), args) || obj;
+        if (obj.startsWith("$")) {
+            const spaceIndex = obj.indexOf(" ");
+            const endIndex = spaceIndex === -1 ? obj.length : spaceIndex;
+            const keyPart = obj.slice(0, endIndex);
+            const key = keyPart.slice(1);
+            const replacement = await lang.get(key, args);
+            if (replacement !== undefined) {
+                return obj.replace(keyPart, replacement);
+            }
+        }
         return obj;
     }
 
@@ -33,7 +42,8 @@ export async function reply(interaction: CommandInteraction, text: string, args?
     const embed = await Lang.embed.get(text)
     let flags: any[] = []
     if (embed?.options?.ephemeral) flags.push(MessageFlags.Ephemeral)
-    const newEmbed = await localize(embed, Lang.en, args)
+    var newEmbed = await localize(embed, Lang.en, args)
+    var newEmbed = await localize(newEmbed, Lang.global, args)
     await interaction.reply({ embeds: [newEmbed], flags: flags })
 }
 
