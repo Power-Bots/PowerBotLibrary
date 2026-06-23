@@ -38,13 +38,11 @@ async function localize(obj: any, lang: Lang, args?: Record<string, any>): Promi
     return obj;
 }
 
-export async function reply(interaction: CommandInteraction, text: string, args?: Record<string, any>){
-    const embed = await Lang.embed.get(text)
-    let flags: any[] = []
-    if (embed?.options?.ephemeral) flags.push(MessageFlags.Ephemeral)
+export async function embedLocalize(embedName: string, args?: Record<string, any>){
+    const embed = await Lang.embed.get(embedName)
     var newEmbed = await localize(embed, Lang.en, args)
     var newEmbed = await localize(newEmbed, Lang.global, args)
-    await interaction.reply({ embeds: [newEmbed], flags: flags })
+    return { embeds: [newEmbed] }
 }
 
 export class Lang {
