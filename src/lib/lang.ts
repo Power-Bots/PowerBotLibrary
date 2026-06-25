@@ -52,6 +52,13 @@ export async function embedLocalize(embedName: string, args?: Record<string, any
     return { embeds: [newEmbed] }
 }
 
+export async function reply(interaction: CommandInteraction, text: string, args?: Record<string, any>){
+    let flags: any[] = []
+    let embed = (await embedLocalize(text, args)).embeds[0]
+    if (embed?.options?.ephemeral) flags.push(MessageFlags.Ephemeral)
+    await interaction.reply({ embeds: [embed], flags: flags })
+}
+
 export class Lang {
     texts: any
     static global: Lang
