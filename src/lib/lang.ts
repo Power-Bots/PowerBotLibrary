@@ -38,10 +38,17 @@ async function localize(obj: any, lang: Lang, args?: Record<string, any>): Promi
     return obj;
 }
 
-export async function embedLocalize(embedName: string, args?: Record<string, any>){
+export async function embedLocalize(embedName: string, args?: Record<string, any>, excludeFooter: boolean = false){
     const embed = await Lang.embed.get(embedName)
     var newEmbed = await localize(embed, Lang.en, args)
     var newEmbed = await localize(newEmbed, Lang.global, args)
+    if (!excludeFooter) {
+        newEmbed.footer = {
+            "text": bot.info.name,
+            "icon_url": bot.info.icon
+        }
+        newEmbed.timestamp = new Date().toISOString()
+    }
     return { embeds: [newEmbed] }
 }
 
