@@ -42,10 +42,10 @@ export class Bot {
         this.log.info("Press Q+Return to stop the bot");
 
         // ENVIROMENT VARS
-        if (!fs.existsSync(".env")){
+        /*if (!fs.existsSync(".env")){
             this.log.error(`No .env file is in the directory. Please add one`);
             process.exit();
-        };
+        };*/
         const botToken = process.env.DISCORD_TOKEN;
         if (botToken == undefined){
             this.log.error(`The \"DISCORD_TOKEN\" wasn't found in the .env file.\nIt can be added with: \"DISCORD_TOKEN=mytokenhere\"`);
