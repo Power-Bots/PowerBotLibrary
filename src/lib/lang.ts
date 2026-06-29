@@ -10,7 +10,10 @@ async function localize(obj: any, lang: Lang, args?: Record<string, any>): Promi
             const endIndex = spaceIndex === -1 ? obj.length : spaceIndex;
             const keyPart = obj.slice(0, endIndex);
             const key = keyPart.slice(1);
-            const replacement = await lang.get(key, args);
+            let replacement = await lang.get(key, args);
+            if (key.startsWith("emoji.")) {
+                replacement = await bot.getEmoji(key.slice(6))
+            }
             if (replacement !== undefined) {
                 return obj.replace(keyPart, replacement);
             }
