@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import fs from 'node:fs';
 import path from 'node:path';
-import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFlags, Snowflake, Guild, Role, GuildBasedChannel } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits, Routes, REST, MessageFlags, Snowflake, Guild, Role, GuildBasedChannel, ApplicationEmoji } from 'discord.js';
 import { Log } from "./log"
 import { setupDatabase, updateDatabase } from './db';
 import { Lang } from './lang';
@@ -203,5 +203,14 @@ export class Bot {
         } catch {
             return null
         }
+    }
+
+    async getEmoji(name: string): Promise<string> {
+        let emoji = this.client.application.emojis.cache.find((e: ApplicationEmoji) => e.name === name)
+        if (!emoji) {
+            const emojis = await this.client.application.emojis.fetch()
+            emoji = emojis.find((e: ApplicationEmoji) => e.name === name)
+        }
+        return emoji.toString()
     }
 }
